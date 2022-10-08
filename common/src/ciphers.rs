@@ -40,7 +40,8 @@ impl Decrypt for Decryption {
         let mut result = String::new();
         for c in msg.chars() {
             let r = if c.is_uppercase() { 65 } else { 97 };
-            result.push(char::from_u32((c as u32 + k - r) % 26 + r).expect("Bounds error"));
+            result.push(char::from_u32((c as u32 - r - k) % 26 + r).expect("Bounds error"));
+            todo!("EDIT THE OFFSET TO REVERSE");
         }
 
         result
@@ -57,17 +58,34 @@ mod tests {
     }
 
     #[test]
-    fn caesar_encrypt_test() {
+    fn caesar_test() {
         let ec = Encryption {};
-        assert_eq!(ec.caesar("abc".to_string()), "def");
-        assert_eq!(ec.caesar("cat".to_string()), "fdw");
-        assert_eq!(ec.caesar("hello".to_string()), "khoor");
-        assert_eq!(ec.caesar("rclc".to_string()), "ufof");
-        assert_eq!(ec.caesar("RCLC".to_string()), "UFOF");
+
+        let def = ec.caesar("abc".to_string());
+        assert_eq!(def, "def");
+
+        let cat = ec.caesar("cat".to_string());
+        assert_eq!(cat, "fdw");
+
+        let khoor = ec.caesar("hello".to_string());
+        assert_eq!(khoor, "khoor");
+
+        let ufof = ec.caesar("rclc".to_string());
+        assert_eq!(ufof, "ufof");
+
+        let ufof_upper = ec.caesar("RCLC".to_string());
+        assert_eq!(ufof_upper, "UFOF");
+
+        let dc = Decryption {};
+        assert_eq!(def, dc.caesar("abc".to_string()));
+        assert_eq!(cat, dc.caesar("fdw".to_string()));
+        assert_eq!(khoor, dc.caesar("hello".to_string()));
+        assert_eq!(ufof, dc.caesar("rclc".to_string()));
+        assert_eq!(ufof_upper, dc.caesar("RCLC".to_string()));
     }
 
     #[test]
-    fn shift_encrypt_test() {
+    fn shift_test() {
         let ec = Encryption {};
         assert_eq!(ec.shift(3, "cat".to_string()), "fdw");
         assert_eq!(ec.shift(3, "hello".to_string()), "khoor");
